@@ -39,7 +39,7 @@ const ProjectComponent: FC<ProjectProps> = ({ project, admin }) => {
                     <p>
                         {project.inviteCode}
                     </p>
-                    <button>
+                    <button className='btn btn-sm'>
                         <Copy className="w-5" />
                     </button>
                 </div>

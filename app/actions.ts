@@ -61,13 +61,12 @@ export async function createProject(name: string, description: string, email: st
     }
 }
 
-export async function getProjectsCreateByUser(email: string) {
+export async function getProjectsCreatedByUser(email: string) {
     try {
+
         const projects = await prisma.project.findMany({
-            where : {
-                createdBy: {
-                    email
-                }
+            where: {
+                createdBy: { email }
             },
             include: {
                 tasks: {
@@ -77,12 +76,12 @@ export async function getProjectsCreateByUser(email: string) {
                     }
                 },
                 users: {
-                    select : {
-                        user : {
+                    select: {
+                        user: {
                             select: {
                                 id: true,
-                                email: true,
-                                name: true
+                                name: true,
+                                email: true
                             }
                         }
                     }
@@ -92,8 +91,25 @@ export async function getProjectsCreateByUser(email: string) {
 
         const formattedProjects = projects.map((project) => ({
             ...project,
-            users : project.users.map((user) => user.user),
+            users: project.users.map((userEntry) => userEntry.user)
         }))
+
+        return formattedProjects
+
+    } catch (error) {
+        console.error(error)
+        throw new Error
+    }
+}
+
+export async function deleteProjectById(projectId: string) {
+    try {
+        await prisma.project.delete({
+            where: {
+                id: projectId
+            }
+        })
+        console.log(`Projet avec l'ID ${projectId} supprimé avec succès.`);
     } catch (error) {
         console.error(error)
         throw new Error
