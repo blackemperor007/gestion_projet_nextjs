@@ -105,7 +105,7 @@ export default function Home() {
             <ul className="w-full grid md:grid-cols-3 gap-6">
               {projects.map((project) => (
                 <li key={project.id}>
-                  <ProjectComponent project={project} admin={1} ></ProjectComponent>
+                  <ProjectComponent project={project} admin={1} style={true}></ProjectComponent>
                 </li>
               ))}
             </ul>
