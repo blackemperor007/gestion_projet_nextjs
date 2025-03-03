@@ -60,3 +60,42 @@ export async function createProject(name: string, description: string, email: st
         throw new Error
     }
 }
+
+export async function getProjectsCreateByUser(email: string) {
+    try {
+        const projects = await prisma.project.findMany({
+            where : {
+                createdBy: {
+                    email
+                }
+            },
+            include: {
+                tasks: {
+                    include: {
+                        user: true,
+                        createdBy: true
+                    }
+                },
+                users: {
+                    select : {
+                        user : {
+                            select: {
+                                id: true,
+                                email: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        const formattedProjects = projects.map((project) => ({
+            ...project,
+            users : project.users.map((user) => user.user),
+        }))
+    } catch (error) {
+        console.error(error)
+        throw new Error
+    }
+}

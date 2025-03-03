@@ -1,10 +1,12 @@
 "use client";
 import Image from "next/image";
 import Wrapper from "./components/Wrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FolderGit2 } from "lucide-react";
-import { createProject } from "./actions";
+import { createProject, getProjectsCreateByUser } from "./actions";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "react-toastify";
+import { Project } from "@/type";
 
 export default function Home() {
 
@@ -12,6 +14,23 @@ export default function Home() {
   const email = user?.primaryEmailAddress?.emailAddress as string
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const fetchProjects = async (email: string) => {
+    try {
+      const myproject = await getProjectsCreateByUser(email)
+      setProjects(myproject)
+      console.log(myproject)
+    } catch (error) {
+      console.error('Erreur lors du chargement des projets:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (email) {
+      fetchProjects(email)
+    }
+  }, [email])
 
   const handleSubmit = async () => {
     try {
@@ -21,7 +40,8 @@ export default function Home() {
         modal.close()
       }
       setName("")
-      setDescription("") 
+      setDescription("")
+      toast.success(`Projet créé avec succès`)
     } catch (error) {
       console.error('Error creating project', error)
     }
@@ -33,7 +53,10 @@ export default function Home() {
     <Wrapper>
       <div>
 
-        <button className="btn" onClick={() => (document.getElementById('my_modal_3') as HTMLDialogElement).showModal()}>open modal</button>
+        <button className="btn btn-primary mb-6" onClick={() => (document.getElementById('my_modal_3') as HTMLDialogElement).showModal()}>
+          Créer un nouveau projet
+          <FolderGit2 />
+        </button>
         <dialog id="my_modal_3" className="modal">
           <div className="modal-box">
             <form method="dialog">
@@ -42,6 +65,7 @@ export default function Home() {
             <h3 className="font-bold text-lg">Nouveau projet</h3>
             <p className="py-4">Décrivez votre projet</p>
             <div>
+              
               <input
                 placeholder="Nom du projet"
                 type="text"
@@ -58,7 +82,7 @@ export default function Home() {
                 required
               >
               </textarea>
-              <button className="btn btn-primary">
+              <button className="btn btn-primary" onClick={handleSubmit}>
                 Nouveau Projet <FolderGit2 />
               </button>
             </div>
