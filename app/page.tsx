@@ -7,6 +7,7 @@ import { createProject, getProjectsCreateByUser } from "./actions";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "react-toastify";
 import { Project } from "@/type";
+import ProjectComponent from "./components/ProjectComponent";
 
 export default function Home() {
 
@@ -88,6 +89,22 @@ export default function Home() {
             </div>
           </div>
         </dialog>
+
+        <div className="w-full">
+          {projects.length > 0 ? (
+            <ul className="w-full grid md:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <li key={project.id}>
+                  <ProjectComponent project={project} admin={1}></ProjectComponent>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div>
+
+            </div>
+          )}
+        </div>
 
       </div>
     </Wrapper>
