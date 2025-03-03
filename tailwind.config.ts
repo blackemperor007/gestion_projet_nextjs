@@ -1,30 +1,31 @@
 import type { Config } from "tailwindcss";
 
 export default {
-    content : [
-        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./components/**/*.{js,ts,jsx,tsx,mdx}",
-        "./app/**/*.{js,ts,jsx,tsx,mdx}"
-    ],
-    theme: {
-        extend: {
-            colors : {
-                background: "var(--background)",
-                foreground: "var(--foreground)"
-            },
-        },
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+      },
     },
-    plugins: [
-        require('daisyui'),
-    ],
-    daisyui: {
-        themes: [
-            "cupcake",
-            "bumblebee",
-            "forest",
-            "lofi",
-            "light",
-            "dark"
-        ]
-    }
+  },
+  plugins: [
+    require('daisyui'),
+  ],
+  daisyui: {
+    theme: [
+      "light",
+      "dark",
+      "cupcake",
+      "bumblebee",
+      "emerald",
+      "corporate",
+      "synthwave",
+    ]
+  }
 } satisfies Config;
