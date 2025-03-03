@@ -4,12 +4,28 @@ import Wrapper from "./components/Wrapper";
 import { useState } from "react";
 import { FolderGit2 } from "lucide-react";
 import { createProject } from "./actions";
+import { useUser } from "@clerk/nextjs";
 
 export default function Home() {
 
-  const [name, setName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const {user} = useUser()
+  const email = user?.primaryEmailAddress?.emailAddress as string
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
 
+  const handleSubmit = async () => {
+    try {
+      const modal = document.getElementById('my_modal_3') as HTMLDialogElement
+      const project = await createProject(name, description, email)
+      if (modal) {
+        modal.close()
+      }
+      setName("")
+      setDescription("") 
+    } catch (error) {
+      console.error('Error creating project', error)
+    }
+  }
 
   
 
