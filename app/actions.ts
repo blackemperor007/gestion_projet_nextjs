@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma"
 import { error } from "console"
 import { randomBytes } from "crypto"
 
-function generateUniqueCode():string {
+function generateUniqueCode(): string {
     return randomBytes(6).toString('hex')
 }
 
@@ -26,7 +26,7 @@ export async function checkAndAddUser(email: string, name: string) {
                 }
             })
             console.error("Erreur lors de la Vérification  de l'utilisateur")
-        }else {
+        } else {
             console.error("Utilisateur déjà présent de la base de données")
         }
     } catch (error) {
@@ -37,10 +37,10 @@ export async function checkAndAddUser(email: string, name: string) {
 export async function createProject(name: string, description: string, email: string) {
     if (!name || !description || !email) return
     try {
-       const inviteCode = generateUniqueCode()
-       const user = await prisma.user.findUnique({
-           where: {
-               email
+        const inviteCode = generateUniqueCode()
+        const user = await prisma.user.findUnique({
+            where: {
+                email
             }
         })
         if (!user) {
@@ -53,8 +53,9 @@ export async function createProject(name: string, description: string, email: st
                 description,
                 inviteCode,
                 createdById: user.id
-            }})
-            return newProject
+            }
+        })
+        return newProject
     } catch (error) {
         console.error(error)
         throw new Error
@@ -110,6 +111,51 @@ export async function deleteProjectById(projectId: string) {
             }
         })
         console.log(`Projet avec l'ID ${projectId} supprimé avec succès.`);
+    } catch (error) {
+        console.error(error)
+        throw new Error
+    }
+}
+
+export async function addUserToProject(email: string, inviteCode: string) {
+    try {
+        const project = await prisma.project.findUnique({
+            where: { inviteCode }
+        })
+
+        if (!project) {
+            throw new Error("Projet non trouvé")
+        }
+
+        const user = await prisma.user.findUnique({
+            where: { email }
+        })
+
+        if (!user) {
+            throw new Error("Utilisateur non trouvé")
+        }
+
+        const existingAssociation = await prisma.projectUser.findUnique({
+            where: {
+                userId_projectId: {
+                    userId: user.id,
+                    projectId: project.id
+                }
+            }
+        })
+
+        if (existingAssociation) {
+            throw new Error("Utilisateur déjà associé à ce projet")
+        }
+
+        await prisma.projectUser.create({
+            data: {
+                userId: user.id,
+                projectId: project.id
+            }
+        })
+
+        return "Utilisateur associé au projet avec success"
     } catch (error) {
         console.error(error)
         throw new Error
