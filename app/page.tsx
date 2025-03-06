@@ -41,7 +41,7 @@ export default function Home() {
       fetchProjects(email)
       toast.success('Project supprimé !')
     } catch (error) {
-      throw new Error('Error deleting project: ' + error);
+      throw new Error('Erreur lors de la suppréssion du projet: ' + error);
     }
   }
 
@@ -105,7 +105,7 @@ export default function Home() {
             <ul className="w-full grid md:grid-cols-3 gap-6">
               {projects.map((project) => (
                 <li key={project.id}>
-                  <ProjectComponent project={project} admin={1} style={true}></ProjectComponent>
+                  <ProjectComponent project={project} admin={1} style={true} onDelete={deleteProject}></ProjectComponent>
                 </li>
               ))}
             </ul>

@@ -2,13 +2,22 @@ import { Project } from '@/type'
 import { Copy, ExternalLink, FolderGit2, Trash } from 'lucide-react'
 import Link from 'next/link'
 import React, { FC } from 'react'
+import { toast } from 'react-toastify'
 
 interface ProjectProps {
     project: Project
     admin: number
     style: boolean
+    onDelete?: (id : string) => void
 }
-const ProjectComponent: FC<ProjectProps> = ({ project, admin, style }) => {
+const ProjectComponent: FC<ProjectProps> = ({ project, admin, style , onDelete}) => {
+
+    const handleDeleteClick = () => {
+        const isConfirmed = window.confirm("Etes vous dur de vouloir supprimer ce projet ?")
+        if (isConfirmed && onDelete) {
+            onDelete(project.id)
+        }
+    }
 
     const totalTasks = project.tasks?.length
     const tasksByStatuts = project.tasks?.reduce((acc, task) => {
@@ -33,6 +42,17 @@ const ProjectComponent: FC<ProjectProps> = ({ project, admin, style }) => {
     const toDoPercentage = totalTasks ? Math.round((tasksByStatuts.toDo / totalTasks) * 100) : 0
 
     const textSizeClass = style ? 'text-sm' : 'text-md'
+
+    const handleCopyCode = async () => {
+        try {
+            if (project.inviteCode) {
+                await navigator.clipboard.writeText(project.inviteCode)
+                toast.success("Code d'invitation copié")
+            }
+        } catch (error) {
+            toast.error("Erreur lors de la copie du code d'invitation")
+        }
+    }
 
 
     return (
@@ -64,7 +84,7 @@ const ProjectComponent: FC<ProjectProps> = ({ project, admin, style }) => {
                     <p className='text-primary font-bold ml-3'>
                         {project.inviteCode}
                     </p>
-                    <button className='btn btn-sm ml-2'>
+                    <button className='btn btn-sm ml-2' onClick={handleCopyCode}>
                         <Copy className="w-4" />
                     </button>
                 </div>
@@ -123,7 +143,7 @@ const ProjectComponent: FC<ProjectProps> = ({ project, admin, style }) => {
                     </Link>
                 )}
                 {admin === 1 && (
-                    <button className="btn btn-sm ml-3">
+                    <button className="btn btn-sm ml-3" onClick={handleDeleteClick}>
                         <Trash className="w-4" />
                     </button>
                 )}
